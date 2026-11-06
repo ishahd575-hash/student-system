@@ -1,0 +1,75 @@
+// 1 & 2. هيكلة بيانات الطالب ودوال التحليل الأكاديمي
+class Student {
+  constructor(id, name, grades, attendance) {
+    this.id = id;
+    this.name = name;
+    this.grades = grades; // مصفوفة من 3 درجات
+    this.attendance = attendance; // نسبة الحضور
+  }
+
+  // دالة حساب المتوسط باستخدام reduce
+  calculateAverage() {
+    const sum = this.grades.reduce((total, grade) => total + grade, 0);
+    return sum / this.grades.length;
+  }
+
+  // دالة تحديد التقدير بالحروف
+  getGradeLetter(avg) {
+    if (avg >= 85) return 'A';
+    if (avg >= 75) return 'B';
+    if (avg >= 65) return 'C';
+    if (avg >= 50) return 'D';
+    if (avg >= 40) return 'E';
+    return 'F';
+  }
+
+  // دالة النتيجة النهائية (شروط النجاح: المتوسط >= 50 والحضور >= 75)
+  getResult() {
+    const avg = this.calculateAverage();
+    if (avg >= 50 && this.attendance >= 75) {
+      return "ناجح";
+    } else {
+      return "يحتاج مراجعة";
+    }
+  }
+}
+
+
+
+
+// 3. نظام تشغيل الجامعة (إنشاء مصفوفة الطلاب والكائنات)
+const studentsList = [
+  new Student(101, "أحمد محمد", [85, 90, 88], 80),
+  new Student(102, "سارة علي", [42, 45, 48], 70), // طالب متعثر (متوسطه بين 40 و 49)
+  new Student(103, "محمود حسن", [60, 65, 70], 85),
+  new Student(104, "منى أحمد", [44, 46, 45], 90)  // طالب متعثر آخر
+];
+
+// 4. لجنة الرأفة باستخدام دوال المصفوفات الحديثة
+// أ. الاستخراج (filter للطلاب المتعثرين الذين متوسطهم بين 40 و 49)
+const strugglingStudents = studentsList.filter(student => {
+  const avg = student.calculateAverage();
+  return avg >= 40 && avg < 50;
+});
+
+// ب. المعالجة (map لإضافة 5 درجات رأفة لمتوسطات المتعثرين)
+const boostedAverages = strugglingStudents.map(student => {
+  return student.calculateAverage() + 5;
+});
+
+// ج. التحليل (reduce لجمع المتوسطات الجديدة بعد التعديل)
+const totalBoostedAvg = boostedAverages.reduce((sum, avg) => sum + avg, 0);
+
+// د. متوسط الرأفة (مع درع حماية لمنع القسمة على صفر)
+const finalLeniencyAverage = boostedAverages.length > 0 ? totalBoostedAvg / boostedAverages.length : 0;
+
+// 5. المخرجات (Console Logging)
+console.log("--- تقرير أداء الطلاب بالكامل ---");
+studentsList.forEach(student => {
+  const avg = student.calculateAverage();
+  console.log(`الاسم: ${student.name} | المتوسط: ${avg.toFixed(2)} | التقدير: ${student.getGradeLetter(avg)} | النتيجة: ${student.getResult()}`);
+});
+
+console.log("\n--- تقرير لجنة الرأفة للطلاب المتعثرين ---");
+console.log("الطلاب المتعثرون بعد الرأفة:", boostedAverages);
+console.log(`المتوسط العام للطلاب المتعثرين بعد التعديل: ${finalLeniencyAverage.toFixed(2)}`);
